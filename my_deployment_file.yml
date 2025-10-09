@@ -20,3 +20,5 @@ spec:
             image: my-web-app
             ports:
               - containerPort: 8080
+          - imagePullSecrets:
+             - name: ecr-secret
