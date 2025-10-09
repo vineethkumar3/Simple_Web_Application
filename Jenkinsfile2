@@ -1,0 +1,77 @@
+pipeline {
+    agent {
+        label 'worker'
+    }
+    tools {
+        maven 'maven_3.9.11'
+    }
+    environment {
+        DOCKER_IMAGE = 'my_web_app'
+        DOCKER_REPO= '454212'
+        WAR_NAME = 'myapplication.war'
+        DOCKER_HUB_REPO= 'jenkinsrepo'
+        KUBE_SERVER = 'https://collocative-unfondly-shandi.ngrok-free.dev'
+    }
+    stages {
+        stage('Clean Workspace') {
+            steps{
+                cleanWs()
+            }
+        }
+        stage('CheckOut') {
+            steps{
+                git url: 'https://github.com/vineethkumar3/Simple_Web_Application.git', branch: params.Branch
+            }
+        }
+        stage('Build') {
+            steps {
+              sh 'pwd'
+              sh 'mvn package'
+            }
+        }
+        stage ('Docker Build') {
+            steps {
+                withCredentials([string(credentialsId: '454212-docker-repo-access-key', variable: 'DOCKER_TOKEN')]){
+                sh '''
+                echo ${DOCKER_TOKEN}
+                sudo docker rmi ${DOCKER_IMAGE}:v1 || true
+                sudo usermod -aG docker $USER
+                sudo docker build -t ${DOCKER_IMAGE}:latest .
+                sudo docker tag ${DOCKER_IMAGE}:latest ${DOCKER_REPO}/${DOCKER_HUB_REPO}:v2
+                echo "${DOCKER_TOKEN}" | docker login -u 454212 --password-stdin
+                docker push ${DOCKER_REPO}/${DOCKER_HUB_REPO}:v2
+                '''
+                //sh 'sudo docker run -p 9090:8080 my_web_app'
+                }
+            }
+        }
+        stage ('ECR Push'){
+            steps {
+                withAWS(credentials:'AWS_ACCESS_KEY') {
+                sh '''
+                  aws ecr get-login-password --region us-east-1 | docker login --username AWS --password-stdin 879467241318.dkr.ecr.us-east-1.amazonaws.com
+                  docker tag ${DOCKER_REPO}/${DOCKER_HUB_REPO}:v2  879467241318.dkr.ecr.us-east-1.amazonaws.com/web-app:latest
+                  docker push 879467241318.dkr.ecr.us-east-1.amazonaws.com/web-app:latest
+                  '''
+                }
+            }
+        }
+        stage('Deploy') {
+            steps {
+                sh 'echo "Skipped"'
+                //sh 'sudo mv ./target/devops.war /var/lib/tomcat10/webapps/${WAR_NAME}'
+                //sh 'sudo chown tomcat:tomcat /var/lib/tomcat10/webapps/${WAR_NAME}'
+                //sh 'sudo chmod 644 /var/lib/tomcat10/webapps/${WAR_NAME}'
+            }
+        }
+        stage('Kubernetes') {
+            steps {
+              withKubeConfig(
+                  [credentialsId: 'ee133e58-c3c3-4725-8cb3-ecdce9c5efc7', serverUrl: "${env.KUBE_SERVER}"])
+                  {
+                      sh 'kubectl -n dev apply -f my_deployment_file.yml'
+                  }
+            }
+        }
+    }
+}
