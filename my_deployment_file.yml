@@ -17,7 +17,7 @@ spec:
       spec:
         containers:
           - name: my-web-app
-            image: 879467241318.dkr.ecr.us-east-1.amazonaws.com/web-app
+            image: dummy:latest
             ports:
               - containerPort: 8080
         imagePullSecrets:
