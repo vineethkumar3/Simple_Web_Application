@@ -1,4 +1,5 @@
 <h2> Sonarqube: </h2>
+<li>
 1. Create a postgres sql database from docker.
    '''
 docker run -d --name sonarqube-db \
@@ -24,3 +25,4 @@ docker run -d \
   sonarqube:lts-community
 '''
 5. Elastic Search is embedded into sonarqube just informing no need to do any extra thing with that.
+</li>
