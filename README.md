@@ -69,3 +69,8 @@ stage('SonarQube Analysis') {
         }
 ```
 Here for the Quality Gate, to get the status of the scan we have to do the webhook to our project. Then only waitForQualityGate will fetch the status.
+Here sonarqube scanner plugin will ack as a agent.
+
+```
+http://localhost:8080/sonarqube-webhook/
+```
