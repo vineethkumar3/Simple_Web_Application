@@ -41,3 +41,31 @@ If you running any application in local but want to use in remote. Ngrok helps i
 ```
 ngrok http 9000
 ```
+<h3>Integrate Sonarqube into jenkins</h3>
+
+```
+stage('SonarQube Analysis') {
+            steps {
+                script {
+                    // Use Jenkins SonarQube environment
+                    withSonarQubeEnv("${SONARQUBE_ENV}") {
+                        sh """
+                        mvn sonar:sonar \
+                          -Dsonar.projectKey=MyApplication \
+                          -Dsonar.host.url=${SONAR_HOST_URL} \
+                          -Dsonar.login=${SONAR_TOKEN}
+                        """
+                    }
+                }
+            }
+        }
+        stage('Quality Gate') {
+            steps {
+                timeout(time: 5, unit: 'MINUTES') {
+                    // Wait for SonarQube to finish analysis
+                    waitForQualityGate abortPipeline: true
+                }
+            }
+        }
+```
+Here for the Quality Gate, to get the status of the scan we have to do the webhook to our project. Then only waitForQualityGate will fetch the status.
