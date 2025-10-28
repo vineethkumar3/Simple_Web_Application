@@ -1,7 +1,7 @@
 <h2> Sonarqube: </h2>
 <li>
 1. Create a postgres sql database from docker.
-   '''
+'''bash
 docker run -d --name sonarqube-db \
   --network sonar-net \
   -e POSTGRES_USER=sonar -e POSTGRES_PASSWORD=sonar -e POSTGRES_DB=sonarqube \
