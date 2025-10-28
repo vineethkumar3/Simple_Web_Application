@@ -34,3 +34,10 @@ docker run -d \
 <li>
 Elastic Search is embedded into sonarqube just informing no need to do any extra thing with that.
 </li>
+
+<h3>ngrok</h3>
+If you running any application in local but want to use in remote. Ngrok helps in doing that basically it install an agent in your local and it route the traffic that was getting at remote api to this local.
+
+```
+ngrok http 9000
+```
