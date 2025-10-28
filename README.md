@@ -8,6 +8,8 @@ docker run -d --name sonarqube-db \
   -v pgdata:/var/lib/postgresql/data \
   postgres:15-alpine
    '''
+</li>
+<li>
 3. Create a sonarqube docker and sonarqube needs database to store the logs so postgres is mandatory.
 '''
 docker run -d \
@@ -24,5 +26,7 @@ docker run -d \
   -e SONAR_CE_JAVAOPTS="-Xms128m -Xmx256m" \
   sonarqube:lts-community
 '''
+</li>
+<li>
 5. Elastic Search is embedded into sonarqube just informing no need to do any extra thing with that.
 </li>
