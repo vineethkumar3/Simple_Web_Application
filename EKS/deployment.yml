@@ -1,0 +1,21 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: user-deployment
+  labels:
+    app: registration
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: registration
+  template:
+    metadata:
+      labels:
+        app: registration
+    spec:
+      containers:
+        - name: user-container
+          image: 454212/jenkinsrepo:v2
+          ports:
+            - containerPort: 8080
